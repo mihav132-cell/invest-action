@@ -1,0 +1,44 @@
+import java.util.Scanner;
+import java.util.Random;
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        double balance = 1500.0;
+        double VAGStockPrice = 100;
+        int owendStocks = 0;
+        Random random = new Random();
+        while (true){
+            VAGStockPrice += random.nextInt(11) - 5;
+            if (VAGStockPrice < 1) VAGStockPrice = 1;
+            System.out.println("\n Ваш баланс " + balance + "рублей | Акции VAG " + owendStocks + "шт");
+            System.out.println("Текущая стоимость акции VAG AG " + VAGStockPrice + "рублей ");
+            System.out.println("Выберите действие: 1- купить акции VAG| 2 - продать акции | 3 - Выход ");
+            System.out.println("Ваш выбор:");
+          int choice = scanner.nextInt();
+          scanner.nextLine();
+          if (choice == 1) {
+              if (balance >= VAGStockPrice) {
+                  balance -= VAGStockPrice;
+                  owendStocks++;
+                  System.out.println("Одна акция VAG успешно куплена ");
+              } else {
+                  System.out.println("НЕДОСТАТОЧНО СРЕДСТВ!!!!");
+              }
+          }
+                  else if (choice == 2) {
+              if (owendStocks > 0) {
+                  balance += VAGStockPrice;
+                  owendStocks --;
+                  System.out.println("Акция успешно продана!!!!!");
+              } else {
+                  System.out.println("У вас нету акций, продавать нечего");
+              }
+          }
+                        else if (choice == 3){
+                              System.out.println("----------Игра завершена------------");
+                              System.out.println("Итоговый баланс:" + balance + "руб");
+                          }
+                      }
+                  }
+
+              }
