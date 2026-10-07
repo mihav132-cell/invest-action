@@ -1,44 +1,101 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
-import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         double balance = 1500.0;
-        double VAGStockPrice = 100;
-        int owendStocks = 0;
-        Random random = new Random();
-        while (true){
-            VAGStockPrice += random.nextInt(11) - 5;
-            if (VAGStockPrice < 1) VAGStockPrice = 1;
-            System.out.println("\n Ваш баланс " + balance + "рублей | Акции VAG " + owendStocks + "шт");
-            System.out.println("Текущая стоимость акции VAG AG " + VAGStockPrice + "рублей ");
-            System.out.println("Выберите действие: 1- купить акции VAG| 2 - продать акции | 3 - Выход ");
-            System.out.println("Ваш выбор:");
-          int choice = scanner.nextInt();
-          scanner.nextLine();
-          if (choice == 1) {
-              if (balance >= VAGStockPrice) {
-                  balance -= VAGStockPrice;
-                  owendStocks++;
-                  System.out.println("Одна акция VAG успешно куплена ");
-              } else {
-                  System.out.println("НЕДОСТАТОЧНО СРЕДСТВ!!!!");
-              }
-          }
-                  else if (choice == 2) {
-              if (owendStocks > 0) {
-                  balance += VAGStockPrice;
-                  owendStocks --;
-                  System.out.println("Акция успешно продана!!!!!");
-              } else {
-                  System.out.println("У вас нету акций, продавать нечего");
-              }
-          }
-                        else if (choice == 3){
-                              System.out.println("----------Игра завершена------------");
-                              System.out.println("Итоговый баланс:" + balance + "руб");
-                          }
-                      }
-                  }
 
-              }
+
+        List<Stock> market = new ArrayList<>();
+        market.add(new Stock("VAG AG", 100.0));
+        market.add(new Stock("SBER", 250.0));
+        market.add(new Stock("ALFA", 180.0));
+
+
+        List<Integer> myStocks = new ArrayList<>();
+        for (int i = 0; i < market.size(); i++) {
+            myStocks.add(0);
+        }
+
+        int day = 1;
+
+        while (true) {
+
+            for (Stock stock : market) {
+                stock.updatePrice();
+            }
+
+
+            System.out.println("\n================ РЫНОК АКЦИЙ (ДЕНЬ " + day + ") ================");
+            System.out.println("Ваш баланс: " + balance + " рублей\n");
+            System.out.println("Доступные акции:");
+            for (int i = 0; i < market.size(); i++) {
+                Stock s = market.get(i);
+                int count = myStocks.get(i);
+                System.out.println((i + 1) + ". " + s.getName() + " | Цена: " + s.getPrice() + " руб | В портфеле: " + count + " шт");
+            }
+
+            System.out.println("\nВыберите действие:");
+            System.out.println("1 - Купить акцию");
+            System.out.println("2 - Продать акцию");
+            System.out.println("3 - Пропустить ход (Следующий день)");
+            System.out.println("4 - Выйти из игры");
+            System.out.print("Ваш выбор: ");
+
+            int action = scanner.nextInt();
+
+            if (action == 1) {
+                System.out.print("Введите номер акции для покупки (1-" + market.size() + "): ");
+                int index = scanner.nextInt() - 1;
+
+                if (index >= 0 && index < market.size()) {
+                    Stock selected = market.get(index);
+                    if (balance >= selected.getPrice()) {
+                        balance -= selected.getPrice();
+                        myStocks.set(index, myStocks.get(index) + 1);
+                        System.out.println("Успешно куплена акция " + selected.getName());
+                    } else {
+                        System.out.println("НЕДОСТАТОЧНО СРЕДСТВ!");
+                    }
+                } else {
+                    System.out.println("Неверный номер акции!");
+                }
+                day++;
+
+            } else if (action == 2) {
+                System.out.print("Введите номер акции для продажи (1-" + market.size() + "): ");
+                int index = scanner.nextInt() - 1;
+
+                if (index >= 0 && index < market.size()) {
+                    Stock selected = market.get(index);
+                    int owned = myStocks.get(index);
+
+                    if (owned > 0) {
+                        balance += selected.getPrice();
+                        myStocks.set(index, owned - 1);
+                        System.out.println("Успешно продана акция " + selected.getName());
+                    } else {
+                        System.out.println("У вас нет акций этой компании!");
+                    }
+                } else {
+                    System.out.println("Неверный номер акции!");
+                }
+                day++;
+
+            } else if (action == 3) {
+                System.out.println(">> Вы пропустили день. Цены на бирже изменились!");
+                day++;
+
+            } else if (action == 4) {
+                System.out.println("\n------------- Торги завершены ------------");
+                System.out.println("Вы провели на бирже дней: " + day);
+                System.out.println("Итоговый баланс: " + balance + " рублей");
+                break;
+            } else {
+                System.out.println("Неизвестная команда, попробуйте снова!");
+            }
+        }
+    }
+}
